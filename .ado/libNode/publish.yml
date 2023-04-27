@@ -52,12 +52,13 @@ jobs:
               Invoke-WebRequest -Uri https://www.nasm.us/pub/nasm/releasebuilds/2.16.01/win64/nasm-2.16.01-win64.zip -OutFile nasm-2.16.01-win64.zip
               Expand-Archive nasm-2.16.01-win64.zip -DestinationPath nasm -Force;
 
-        - task: CopyFiles@2
-          displayName: Simulate compiling libnode (step 1 of 2)
-          inputs:
-            sourceFolder: $(Build.SourcesDirectory)/nasm/nasm-2.16.01
-            targetFolder: $(Build.SourcesDirectory)/Release
-            contents: '*.exe'
+# This task is to simulate the libnode.dll creation to make it faster
+#        - task: CopyFiles@2
+#          displayName: Simulate compiling libnode (step 1 of 2)
+#          inputs:
+#            sourceFolder: $(Build.SourcesDirectory)/nasm/nasm-2.16.01
+#            targetFolder: $(Build.SourcesDirectory)/Release
+#            contents: '*.exe'
 
 # This task is to simulate the libnode.dll creation to make it faster
 #        - script: ren nasm.exe libnode.dll
