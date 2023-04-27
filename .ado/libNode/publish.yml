@@ -132,7 +132,7 @@ jobs:
           contents: |
             *.targets
 
-      - script: dir $(Build.StagingDirectory)/build/nuget /s
+      - script: dir $(Build.StagingDirectory)\build\nuget /s
 
       - task: PowerShell@2
         inputs:
