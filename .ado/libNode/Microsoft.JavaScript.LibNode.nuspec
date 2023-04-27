@@ -16,7 +16,7 @@
           target="build\native\win-x64"
           exclude="**\*.manifest;**\*.iobj;**\*.ipdb;**\*.pdb;**\*.exp;**\*.ilk" />
 
-    <file src="$nugetroot$\build\native\Microsoft.JavaScript.Hermes.targets"
+    <file src="$nugetroot$\build\native\Microsoft.JavaScript.LibNode.targets"
           target="build\native\Microsoft.JavaScript.LibNode.targets" />
     <file src="$nugetroot$\NOTICE.txt"
           target="NOTICE.txt" />
