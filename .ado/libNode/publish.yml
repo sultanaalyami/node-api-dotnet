@@ -37,13 +37,12 @@ jobs:
       steps:
         - checkout: none
 
-# TODO: Restore this task
-#        - script: |
-#            git init
-#            git remote add origin https://vmoroz:$(githubAuthToken)@github.com/jasongin/nodejs
-#            git fetch --no-tags --progress --verbose --depth=1 origin napi-libnode-v19.9.0:refs/remotes/origin/napi-libnode-v19.9.0
-#            git switch napi-libnode-v19.9.0
-#          displayName: Check out napi-libnode-v19.9.0
+        - script: |
+            git init
+            git remote add origin https://vmoroz:$(githubAuthToken)@github.com/jasongin/nodejs
+            git fetch --no-tags --progress --verbose --depth=1 origin napi-libnode-v19.9.0:refs/remotes/origin/napi-libnode-v19.9.0
+            git switch napi-libnode-v19.9.0
+          displayName: Check out napi-libnode-v19.9.0
 
         - task: PowerShell@2
           displayName: Download nasm
@@ -60,16 +59,15 @@ jobs:
             targetFolder: $(Build.SourcesDirectory)/Release
             contents: '*.exe'
 
-# TODO: Remove this task
-        - script: ren nasm.exe libnode.dll
-          displayName: Simulate compiling libnode (step 2 of 2)
-          workingDirectory: $(Build.SourcesDirectory)/Release
+# This task is to simulate the libnode.dll creation to make it faster
+#        - script: ren nasm.exe libnode.dll
+#          displayName: Simulate compiling libnode (step 2 of 2)
+#          workingDirectory: $(Build.SourcesDirectory)/Release
 
-# TODO: Restore this task
-#        - script: call vcbuild.bat release x64 dll
-#          displayName: Build libNode
-#          env:
-#            path: $(Build.SourcesDirectory)\nasm\nasm-2.16.01;$(path)
+        - script: call vcbuild.bat release x64 dll
+          displayName: Build libNode
+          env:
+            path: $(Build.SourcesDirectory)\nasm\nasm-2.16.01;$(path)
 
         - task: CopyFiles@2
           displayName: Copy built binaries to staging
