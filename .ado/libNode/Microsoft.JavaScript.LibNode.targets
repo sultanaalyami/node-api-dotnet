@@ -4,7 +4,7 @@
     <!-- Fix platform name (win32 should be x86) -->
     <LibNodePlatform Condition="'$(LibNodePlatform)' == 'Win32'">x86</LibNodePlatform>
 
-    <LibNodeAppPlatform Condition="'$(LibNodeAppPlatform)' == ''">win32</LibNodeAppPlatform>
+    <LibNodeAppPlatform Condition="'$(LibNodeAppPlatform)' == ''">win</LibNodeAppPlatform>
 
     <LibNodeNugetRoot>$(MSBuildThisFileDirectory)..\..\</LibNodeNugetRoot>
 
@@ -12,6 +12,6 @@
     <LibNodePackageRoot Condition="'$(LibNodeNugetRootOverride)' != ''">$(LibNodeNugetRootOverride)</LibNodePackageRoot>
   </PropertyGroup>
   <ItemGroup>
-    <ReferenceCopyLocalPaths Include="$(LibNodePackageRoot)build\native\$(LibNodeAppPlatform)\$(LibNodePlatform)\libnode.dll" />
+    <ReferenceCopyLocalPaths Include="$(LibNodePackageRoot)build\native\$(LibNodeAppPlatform)-$(LibNodePlatform)\libnode.dll" />
   </ItemGroup>
 </Project>

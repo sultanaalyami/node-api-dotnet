@@ -8,15 +8,17 @@
     <projectUrl>$RepoUri$</projectUrl>
     <license type="expression">MIT</license>
     <copyright>&#169; Microsoft Corporation. All rights reserved.</copyright>
-    <repository type="git" url="$RepoUri$" commit="$CommitId$" />
+    <repository type="git" url="$RepoUri$" />
     <tags>native library node.js node</tags>
   </metadata>
   <files>
-    <file src="$nugetroot$\build\native\win32\x64\**\*.*"
-          target="build\native\win32\x64"
+    <file src="$nugetroot$\build\native\win-x64\**\*.*"
+          target="build\native\win-x64"
           exclude="**\*.manifest;**\*.iobj;**\*.ipdb;**\*.pdb;**\*.exp;**\*.ilk" />
 
     <file src="$nugetroot$\build\native\Microsoft.JavaScript.Hermes.targets"
           target="build\native\Microsoft.JavaScript.LibNode.targets" />
+    <file src="$nugetroot$\NOTICE.txt"
+          target="NOTICE.txt" />
   </files>
 </package>
