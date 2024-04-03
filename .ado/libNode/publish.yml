@@ -21,7 +21,7 @@ resources:
   repositories:
     - repository: Nodejs_19
       type: github
-      endpoint: vmoroz
+      endpoint: Microsoft
       name: jasongin/nodejs
       ref: refs/heads/napi-libnode-v19.9.0
 
