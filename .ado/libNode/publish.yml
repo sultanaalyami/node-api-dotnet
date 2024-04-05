@@ -19,11 +19,11 @@ parameters:
 
 resources:
   repositories:
-    - repository: Nodejs_19
+    - repository: Nodejs_20
       type: github
       endpoint: Microsoft
       name: jasongin/nodejs
-      ref: refs/heads/napi-libnode-v19.9.0
+      ref: refs/heads/napi-libnode-v20.9.0
 
 jobs:
   # Build libNode binaries per platform.
@@ -40,9 +40,9 @@ jobs:
         - script: |
             git init
             git remote add origin https://vmoroz:$(githubAuthToken)@github.com/jasongin/nodejs
-            git fetch --no-tags --progress --verbose --depth=1 origin napi-libnode-v19.9.0:refs/remotes/origin/napi-libnode-v19.9.0
-            git switch napi-libnode-v19.9.0
-          displayName: Check out napi-libnode-v19.9.0
+            git fetch --no-tags --progress --verbose --depth=1 origin napi-libnode-v20.9.0:refs/remotes/origin/napi-libnode-v20.9.0
+            git switch napi-libnode-v20.9.0
+          displayName: Check out napi-libnode-v20.9.0
 
         - task: PowerShell@2
           displayName: Download nasm
@@ -137,7 +137,7 @@ jobs:
         inputs:
           targetType: 'inline'
           script: |
-            $Version = "19.9.0"
+            $Version = "20.9.0"
             Write-Host "##vso[task.setvariable variable=Version]$Version"
 
       - task: NuGetCommand@2
