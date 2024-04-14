@@ -114,7 +114,7 @@ public unsafe partial class JSRuntime
     public record struct napi_callback(nint Handle)
     {
 #if NET6_0_OR_GREATER
-        public napi_callback(
+        internal napi_callback(
             delegate* unmanaged[Cdecl]<napi_env, napi_callback_info, napi_value> handle)
             : this((nint)handle) { }
 #else
@@ -129,7 +129,7 @@ public unsafe partial class JSRuntime
     public record struct napi_finalize(nint Handle)
     {
 #if NET6_0_OR_GREATER
-        public napi_finalize(delegate* unmanaged[Cdecl]<napi_env, nint, nint, void> handle)
+        internal napi_finalize(delegate* unmanaged[Cdecl]<napi_env, nint, nint, void> handle)
             : this((nint)handle) { }
 #else
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
