@@ -26,6 +26,7 @@ const projectList = [
 ];
 
 try {
+  console.log('Creating directory: ' + outDir);
   if (fs.existsSync(outDir)) fs.rmSync(outDir, { recursive: true, force: true });
   fs.mkdirSync(outDir, { recursive: true });
 
@@ -35,7 +36,8 @@ try {
     indexMarkdown += buildProjectMarkdownDocs(project.name, project.references);
   }
 
-  const nav = generateNavigationTree(outDir);
+  console.log('Generating navigation tree: ' + path.join(outDir, 'nav.mts'));
+  const nav = generateNavigationTree('package', outDir);
   fs.writeFileSync(path.join(outDir, 'nav.mts'), 'export default ' + JSON.stringify(nav, null, 2));
 
   // Remove the assembly headers in the combined index file and insert a new top-level header.
@@ -123,12 +125,19 @@ function processMarkdownFiles(directory) {
 
 /** Apply some transformations on a markdown string. */
 function processMarkdown(md) {
+  md = md.replace('```csharp', '```C#');
+
   // Escape some special chars in markdown tables because they cause problems with vitepress:
   // https://github.com/vuejs/vitepress/issues/449
   md = md
     .replace(/(?<=\|[^|]*);(?=[^|]*\|)/g, '&semi;')
     .replace(/(?<=\|[^|]*){(?=[^|]*\|)/g, '&lbrace;')
     .replace(/(?<=\|[^|]*)}(?=[^|]*\|)/g, '&rbrace;');
+
+  // Strip the not-really-obsolete attributes from ref structs.
+  md = md.replace(
+    /\[Obsolete\("Types with embedded references[^"]+"\)\]\r?\npublic struct/g,
+    'public ref struct');
 
   // Insert YAML front matter for vitepress rendering.
   md = `---
@@ -143,7 +152,7 @@ outline: false
 }
 
 /** Generate navigation data that will be imported into the vitepress sidebar config. */
-function generateNavigationTree(rootDir, subDir) {
+function generateNavigationTree(itemType, rootDir, subDir) {
   const referencePath = '/reference/dotnet/';
   const items = [];
   const currentDir = subDir ? path.join(rootDir, subDir) : rootDir;
@@ -163,26 +172,31 @@ function generateNavigationTree(rootDir, subDir) {
       }
 
       headers.forEach((header) => {
+        let link = path.join(referencePath, subDir ?? '', file).replace(/\\/g, '/');
+
+        if (/ namespace$/.test(header)) {
+          // Fix namespace links to point to subheaders in the merged index.
+          link = referencePath + '#' +
+              header.replace(/\.| /g, '-').toLowerCase();
+
+          // Use the namespace name as the file (directory) name when recursing.
+          file = header.replace(/ namespace$/, '');
+        }
+
         // If there's a matching subdirectory, recurse to find sub-items.
         let subItems = undefined;
         if (fs.existsSync(path.join(currentDir, file)) &&
           fs.lstatSync(path.join(currentDir, file)).isDirectory()
         ) {
-          subItems = generateNavigationTree(rootDir, path.join(subDir ?? '', file));
-        }
-
-        let link = path.join(referencePath, subDir ?? '', file).replace(/\\/g, '/');
-
-        // Fix namespace links to point to subheaders in the merged index.
-        if (/ namespace$/.test(header)) {
-          link = referencePath + '#' +
-            header.replace(/\.| /g, '-').toLowerCase();
+          const itemType = header.substr(header.indexOf(' ') + 1);
+          subItems = generateNavigationTree(itemType, rootDir, path.join(subDir ?? '', file));
         }
 
         // Shorten some header suffixes so they fit better in the sidebar.
         header = header
           .replace(/ namespace$/, '')
-          .replace('structure', 'struct');
+          .replace('structure', 'struct')
+          .replace('enumeration', 'enum');
 
         items.push({
           text: header,
@@ -192,7 +206,42 @@ function generateNavigationTree(rootDir, subDir) {
         });
       });
   });
-  return items;
+  return categorizeNavItems(itemType, items);
+}
+
+function categorizeNavItems(containerType, items) {
+  let categories = [];
+  switch (containerType) {
+    case 'namespace':
+      categories = ['Interfaces', 'Classes', 'Structs', 'Enums', 'Delegates'];
+      break;
+    case 'interface':
+    case 'class':
+    case 'structure':
+      categories = ['Constructors', 'Properties', 'Methods', 'Operators', 'Events', 'Fields'];
+      break;
+    default:
+      return items;
+  }
+
+  const categorizedItems = [];
+
+  for (let category of categories) {
+    let categorySuffix = ' ' + (
+      category === 'Properties' ? 'property' :
+      category === 'Classes' ? 'class' :
+      category.toLowerCase().replace(/s$/, ''));
+    const categoryItems = items.filter((i) => i.text.endsWith(categorySuffix));
+    if (categoryItems.length > 0) {
+      categorizedItems.push({
+        text: category,
+        items: categoryItems,
+        collapsed: true,
+      });
+    }
+  }
+
+  return categorizedItems;
 }
 
 /** Extract headers from a markdown file. */
